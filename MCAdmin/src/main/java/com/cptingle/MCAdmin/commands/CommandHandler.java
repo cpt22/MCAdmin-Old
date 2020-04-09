@@ -112,19 +112,19 @@ public class CommandHandler implements CommandExecutor {
 				st.executeUpdate("INSERT INTO mca_app_users (uuid, app_link_token) VALUES ('" + p.getUniqueId().toString() + "', '" + token + "')");
 				
 				TextComponent msg = new TextComponent( token );
-						msg.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL, ("https://www.cwru.club/api/echo.php?token=" + token)));
+						msg.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL, ("https://www.cwru.club/api/echo?token=" + token)));
 						msg.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( "Click to copy" ).create() ) );
 				
-				p.sendMessage("You already are now\nClick below to copy token:");
+				p.sendMessage("You are now registered for the app\nClick below to take you to a page where you can copy the token:");
 			    p.spigot().sendMessage(msg);
 			} else {
 				do {
 					String token = rs.getString("app_link_token") + "";
 					TextComponent msg = new TextComponent( token );
-							msg.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL, ("https://www.cwru.club/api/echo.php?token=" + token)));
+							msg.setClickEvent( new ClickEvent( ClickEvent.Action.OPEN_URL, ("https://www.cwru.club/api/echo?token=" + token)));
 							msg.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder( "Click to copy" ).create() ) );
 					
-					p.sendMessage("You already are registered\nClick below to copy token:");
+					p.sendMessage("You already are registered\nClick below to take you to a page where you can copy the token:");
 				    p.spigot().sendMessage(msg);
 			    } while (rs.next());
 			}
