@@ -17,6 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 public class MCAdmin extends JavaPlugin {
 	// Connection
@@ -65,6 +66,10 @@ public class MCAdmin extends JavaPlugin {
 		getLogger().info("v" + this.getDescription().getVersion() + " enabled.");
 
 		loadOnlineUsers();
+		
+		KeepConnAlive kca = new KeepConnAlive(connection.getConnection());
+		BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(this, kca, 12000L, 36000);
 	}
 
 	@Override
