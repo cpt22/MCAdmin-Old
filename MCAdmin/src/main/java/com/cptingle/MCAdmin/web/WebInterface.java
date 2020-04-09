@@ -1,4 +1,4 @@
-package com.cptingle.MCAdmin;
+package com.cptingle.MCAdmin.web;
 
 import java.io.IOException;
 import java.net.URI;

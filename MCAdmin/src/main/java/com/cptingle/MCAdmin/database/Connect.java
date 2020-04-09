@@ -1,4 +1,4 @@
-package com.cptingle.MCAdmin;
+package com.cptingle.MCAdmin.database;
 
 import java.io.Closeable;
 import java.sql.Connection;
@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.bukkit.configuration.file.FileConfiguration;
+
+import com.cptingle.MCAdmin.MCAdmin;
 
 public class Connect implements Closeable {
 	

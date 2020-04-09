@@ -1,4 +1,4 @@
-package com.cptingle.MCAdmin;
+package com.cptingle.MCAdmin.util;
 
 import java.security.SecureRandom;
 import java.util.Random;

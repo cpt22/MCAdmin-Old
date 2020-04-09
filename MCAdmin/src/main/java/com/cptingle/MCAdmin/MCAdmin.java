@@ -19,6 +19,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.cptingle.MCAdmin.commands.CommandHandler;
+import com.cptingle.MCAdmin.database.Connect;
+import com.cptingle.MCAdmin.database.KeepConnAlive;
+import com.cptingle.MCAdmin.util.RandomToken;
+import com.cptingle.MCAdmin.web.WebInterface;
+
 public class MCAdmin extends JavaPlugin {
 	// Connection
 	private Connect connection;
@@ -59,8 +65,9 @@ public class MCAdmin extends JavaPlugin {
 		wi = new WebInterface();
 
 		// Register event listeners
-		ch = new CommandHandler(this);
 		registerListeners();
+		ch = new CommandHandler(this);
+		registerCommands();
 
 		// Announcement enablement
 		getLogger().info("v" + this.getDescription().getVersion() + " enabled.");
@@ -171,8 +178,15 @@ public class MCAdmin extends JavaPlugin {
 	private void registerListeners() {
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new PushGlobalListener(this), this);
+	}
+	
+	// Register all commands
+	private void registerCommands() {
+		// Main plugin commands
 		getCommand("mca").setExecutor(ch);
 		getCommand("mcadmin").setExecutor(ch);
+		
+		// Standalone commands
 	}
 
 	/*

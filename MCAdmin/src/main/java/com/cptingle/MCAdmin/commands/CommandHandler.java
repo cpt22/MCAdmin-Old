@@ -1,4 +1,4 @@
-package com.cptingle.MCAdmin;
+package com.cptingle.MCAdmin.commands;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,6 +9,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.cptingle.MCAdmin.MCAdmin;
+import com.cptingle.MCAdmin.web.WebInterface;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
