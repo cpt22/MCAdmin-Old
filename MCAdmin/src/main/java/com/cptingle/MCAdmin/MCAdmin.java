@@ -19,6 +19,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.cptingle.MCAdmin.commands.BanCommand;
 import com.cptingle.MCAdmin.commands.CommandHandler;
 import com.cptingle.MCAdmin.database.Connect;
 import com.cptingle.MCAdmin.database.KeepConnAlive;
@@ -187,6 +188,10 @@ public class MCAdmin extends JavaPlugin {
 		getCommand("mcadmin").setExecutor(ch);
 		
 		// Standalone commands
+		BanCommand bc = new BanCommand(this);
+		getCommand("ban").setExecutor(bc);
+		getCommand("unban").setExecutor(bc);
+		getCommand("pardon").setExecutor(bc);
 	}
 
 	/*

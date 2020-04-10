@@ -35,7 +35,7 @@ public class WebInterface {
 				try {
 					response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 					
-					System.out.println(response.body());
+					//System.out.println(response.body());
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (InterruptedException e) {
@@ -58,7 +58,6 @@ public class WebInterface {
 			builder.append("=");
 			builder.append(URLEncoder.encode(entry.getValue().toString(), StandardCharsets.UTF_8));
 		}
-		System.out.println(builder.toString());
 		return HttpRequest.BodyPublishers.ofString(builder.toString());
 	}
 

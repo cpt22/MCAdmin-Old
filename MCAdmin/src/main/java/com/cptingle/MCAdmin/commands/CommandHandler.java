@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.cptingle.MCAdmin.MCAdmin;
+import com.cptingle.MCAdmin.messaging.MSG;
 import com.cptingle.MCAdmin.web.WebInterface;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -19,21 +20,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class CommandHandler implements CommandExecutor {
-	private enum MSG {
-		NO_PERMISSION("You do not have permission to use this command."),
-		ONLY_PLAYER("This command can only be run by players.");
-		
-		private final String msg;
-		 
-	    MSG(String msg) {
-	        this.msg = msg;
-	    }
-	 
-	    public String toString() {
-	        return msg;
-	    }
-	}
-
 	private MCAdmin plugin;
 	private Connection conn;
 	private WebInterface wi;

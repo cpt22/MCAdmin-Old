@@ -56,7 +56,9 @@ public class PushGlobalListener implements Listener {
 			Map<Object, Object> params = new HashMap<>();
 			params.put("name", username);
 			params.put("status", onlineStatus);
-			wi.sendPost("http://localhost/apns/sendEvent.php", params);
+			
+			if (eventType.equalsIgnoreCase("join") || eventType.equalsIgnoreCase("quit"))
+				wi.sendPost("http://localhost/apns/sendEvent.php", params);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Exception e) {

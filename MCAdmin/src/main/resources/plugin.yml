@@ -10,9 +10,21 @@ commands:
     mcadmin:
         description: Base command for MCAdmin
         usage: Error
+    ban:
+        description: 'Usage: /ban <player> [message]'
+    unban:
+        description: 'Usage: /unban <player>'
+    pardon:
+        description: 'Usage: /pardon <player>'
 permissions:
     mcadmin.register:
         description: Allows a player to register
-        default: true
+        default: op
+    mcadmin.ban:
+        description: Bans specified player
+        default: op
+    mcadmin.pardon:
+        description: Unbans specific player
+        default: op
   
         
