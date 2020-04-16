@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -37,6 +38,7 @@ public class MCAdmin extends JavaPlugin {
 	private CommandHandler ch;
 	
 	// Tokens
+	private String serverToken;
 	private RandomToken tokenizer;
 
 	// Configuration
@@ -60,6 +62,7 @@ public class MCAdmin extends JavaPlugin {
 		// saveConfig();
 		
 		tokenizer = new RandomToken(100);
+		serverToken = config.getString("token", "");
 
 		// Create connection
 		connection = new Connect(this, config);
@@ -161,6 +164,10 @@ public class MCAdmin extends JavaPlugin {
 
 	public WebInterface getWeb() {
 		return this.wi;
+	}
+	
+	public String getServerToken() {
+		return this.serverToken;
 	}
 
 	/**
