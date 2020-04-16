@@ -40,26 +40,17 @@ public class CommandHandler implements CommandExecutor {
 				switch(command.toLowerCase()) {
 				case "register":
 					return registerCommand(sender, cmd, label, args);
+				case "linkserver":
+					return linkCommand(sender, cmd, label, args);
 				default:
 					break;
 				}
 			}
-			
-			/*if (args[0] != null) {
-				if (args[0].equalsIgnoreCase("register")) {
-					if (sender instanceof Player) {
-						if (args[1] != null && args[2] != null) {
-							Player p = (Player) sender;
-							String name = args[1];
-							String token = args[2];
-							String uuid = p.getUniqueId().toString();
-							storePlayer(uuid, name, token);
-							return true;
-						}
-					}
-				}
-			}*/
 		}
+		return false;
+	}
+	
+	private boolean linkCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		return false;
 	}
 	
