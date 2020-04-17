@@ -1,7 +1,6 @@
 package com.cptingle.MCAdmin.commands;
 
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -74,16 +73,6 @@ public class BanCommand implements CommandExecutor {
 			if (args.length > 1)
 				message = allArgs(1, args);
 			
-			try {
-				Statement st = plugin.getConnection().createStatement();
-				st.executeUpdate("INSERT INTO mca_banlist (uuid, username, message, banned, executor) VALUES ('" + pUUID + "','" + pName + "','" + message + "',1,'" + sender.getName() + "') ON DUPLICATE KEY UPDATE message='" + message + "', banned=1, executor='" + sender.getName() + "'");
-				st.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				sender.sendMessage(MSG.ERROR_GENERIC.toString());
-				return true;
-			}
-			
 			Bukkit.getBanList(BanList.Type.NAME).addBan(pName, message, null, null);		
 			Bukkit.broadcast("Player " + pName + " was banned by " + sender.getName(), "mcadmin.ban");
 			if (p != null)
@@ -97,16 +86,6 @@ public class BanCommand implements CommandExecutor {
 			
 			if (args.length == 0) {
 				sender.sendMessage(ChatColor.RED + "Error: No Player Specified!");
-				return true;
-			}
-			
-			try {
-				Statement st = plugin.getConnection().createStatement();
-				st.executeUpdate("INSERT INTO mca_banlist (uuid, username, message, banned, executor) VALUES ('" + pUUID + "','" + pName + "','',0,'" + sender.getName() + "') ON DUPLICATE KEY UPDATE message='', banned=0, executor='" + sender.getName() + "'");
-				st.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				sender.sendMessage(MSG.ERROR_GENERIC.toString());
 				return true;
 			}
 			

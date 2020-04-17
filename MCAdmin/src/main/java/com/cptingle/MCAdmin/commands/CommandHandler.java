@@ -21,13 +21,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class CommandHandler implements CommandExecutor {
 	private MCAdmin plugin;
-	private Connection conn;
-	private WebInterface wi;
+	//private Connection conn;
+	//private WebInterface wi;
 
 	public CommandHandler(MCAdmin plugin) {
 		this.plugin = plugin;
-		this.conn = plugin.getConnection();
-		this.wi = plugin.getWeb();
+		//this.conn = plugin.getConnection();
+		//this.wi = plugin.getWeb();
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class CommandHandler implements CommandExecutor {
 		
 		
 		
-		try {
+		/*try {
 			Statement st = conn.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM mca_app_users WHERE uuid='" + p.getUniqueId().toString() + "'");
 			
@@ -110,7 +110,7 @@ public class CommandHandler implements CommandExecutor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		*/
 		
 		
 		return true;
@@ -121,7 +121,7 @@ public class CommandHandler implements CommandExecutor {
 	}
 
 	private void storePlayer(String uuid, String name, String token) {
-		try {
+		/*try {
 			Statement st = conn.createStatement();
 			String sql = "UPDATE mca_players SET name='" + name + "' WHERE name='" + name + "'" + 
 					"IF @@ROWCOUNT=0" + 
@@ -130,7 +130,7 @@ public class CommandHandler implements CommandExecutor {
 			st.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 }

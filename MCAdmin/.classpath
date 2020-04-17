@@ -25,5 +25,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/christiantingle/eclipse-workspace/MCAdminItems/MCAdminItems-1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

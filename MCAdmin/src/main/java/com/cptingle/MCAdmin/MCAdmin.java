@@ -5,11 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -18,25 +14,25 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import com.cptingle.MCAdmin.commands.BanCommand;
 import com.cptingle.MCAdmin.commands.CommandHandler;
-import com.cptingle.MCAdmin.database.Connect;
-import com.cptingle.MCAdmin.database.KeepConnAlive;
+import com.cptingle.MCAdmin.socket.Client;
 import com.cptingle.MCAdmin.util.RandomToken;
-import com.cptingle.MCAdmin.web.WebInterface;
+import com.cptingle.MCAdminItems.PlayerUpdate;
+import com.cptingle.MCAdminItems.SimpleRequest;
 
 public class MCAdmin extends JavaPlugin {
 	// Connection
-	private Connect connection;
+	// private Connect connection;
 
 	// Website
-	private WebInterface wi;
+	// private WebInterface wi;
+	private Client client;
 
 	// Commands
 	private CommandHandler ch;
-	
+
 	// Tokens
 	private String serverToken;
 	private RandomToken tokenizer;
@@ -60,13 +56,15 @@ public class MCAdmin extends JavaPlugin {
 		// Set config headers
 		// getConfig().options().header(getHeader());
 		// saveConfig();
-		
+
 		tokenizer = new RandomToken(100);
 		serverToken = config.getString("token", "");
 
+		client = new Client(serverToken);
+
 		// Create connection
-		connection = new Connect(this, config);
-		wi = new WebInterface();
+		// connection = new Connect(this, config);
+		// wi = new WebInterface();
 
 		// Register event listeners
 		registerListeners();
@@ -77,10 +75,12 @@ public class MCAdmin extends JavaPlugin {
 		getLogger().info("v" + this.getDescription().getVersion() + " enabled.");
 
 		loadOnlineUsers();
-		
-		KeepConnAlive kca = new KeepConnAlive(connection.getConnection());
-		BukkitScheduler scheduler = getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, kca, 12000L, 36000);
+
+		/*
+		 * KeepConnAlive kca = new KeepConnAlive(connection.getConnection());
+		 * BukkitScheduler scheduler = getServer().getScheduler();
+		 * scheduler.scheduleSyncRepeatingTask(this, kca, 12000L, 36000);
+		 */
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class MCAdmin extends JavaPlugin {
 		clearOnlineUsers();
 
 		// Close Connection
-		connection.close();
+		// connection.close();
 		getLogger().info("disabled");
 	}
 
@@ -96,7 +96,7 @@ public class MCAdmin extends JavaPlugin {
 	public FileConfiguration getConfig() {
 		return config;
 	}
-	
+
 	public RandomToken getTokenizer() {
 		return tokenizer;
 	}
@@ -158,14 +158,12 @@ public class MCAdmin extends JavaPlugin {
 		}
 	}
 
-	public Connection getConnection() {
-		return connection.getConnection();
-	}
+	/*
+	 * public Connection getConnection() { return connection.getConnection(); }
+	 * 
+	 * public WebInterface getWeb() { return this.wi; }
+	 */
 
-	public WebInterface getWeb() {
-		return this.wi;
-	}
-	
 	public String getServerToken() {
 		return this.serverToken;
 	}
@@ -187,13 +185,13 @@ public class MCAdmin extends JavaPlugin {
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new PushGlobalListener(this), this);
 	}
-	
+
 	// Register all commands
 	private void registerCommands() {
 		// Main plugin commands
 		getCommand("mca").setExecutor(ch);
 		getCommand("mcadmin").setExecutor(ch);
-		
+
 		// Standalone commands
 		BanCommand bc = new BanCommand(this);
 		getCommand("ban").setExecutor(bc);
@@ -205,6 +203,10 @@ public class MCAdmin extends JavaPlugin {
 	 * public void addCommand(String cmd) {
 	 * getCommand(cmd).setExecutor(commandHandler); }
 	 */
+
+	public Client getClient() {
+		return client;
+	}
 
 	// Permissions stuff
 	public boolean has(Player p, String s) {
@@ -219,30 +221,13 @@ public class MCAdmin extends JavaPlugin {
 	}
 
 	public void loadOnlineUsers() {
-		try {
-			Statement st = getConnection().createStatement();
-			for (Player p : this.getServer().getOnlinePlayers()) {
-				st.executeUpdate("INSERT INTO mca_players (uuid, username, status) VALUES " 
-						+ "('" + p.getUniqueId().toString() + "','" + p.getName() + "', 1) ON DUPLICATE KEY UPDATE status=1");
-			}
-
-			st.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (Player p : this.getServer().getOnlinePlayers()) {
+			client.send(new PlayerUpdate(p.getName(), p.getUniqueId().toString(), true));
 		}
 	}
 
 	public void clearOnlineUsers() {
-		try {
-			Statement st = getConnection().createStatement();
-			st.executeUpdate("UPDATE mca_players SET status=0");
-
-			st.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		client.send(SimpleRequest.CLEAR_ONLINE_PLAYERS);
 	}
 
 }
