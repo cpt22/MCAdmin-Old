@@ -23,11 +23,7 @@ import com.cptingle.MCAdminItems.PlayerUpdate;
 import com.cptingle.MCAdminItems.SimpleRequest;
 
 public class MCAdmin extends JavaPlugin {
-	// Connection
-	// private Connect connection;
 
-	// Website
-	// private WebInterface wi;
 	private Client client;
 
 	// Commands
@@ -40,6 +36,9 @@ public class MCAdmin extends JavaPlugin {
 	// Configuration
 	private File configFile;
 	private FileConfiguration config;
+	
+	// Other Vars
+	private boolean enabled;
 
 	@Override
 	public void onLoad() {
@@ -48,6 +47,7 @@ public class MCAdmin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		enabled = true;
 		// Initialize config
 		configFile = new File(getDataFolder(), "config.yml");
 		config = new YamlConfiguration();
@@ -60,7 +60,7 @@ public class MCAdmin extends JavaPlugin {
 		tokenizer = new RandomToken(100);
 		serverToken = config.getString("token", "");
 
-		client = new Client(serverToken);
+		client = new Client(this, serverToken);
 
 		// Create connection
 		// connection = new Connect(this, config);
@@ -86,6 +86,9 @@ public class MCAdmin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		clearOnlineUsers();
+		
+		enabled = false;
+		client = null;
 
 		// Close Connection
 		// connection.close();
@@ -99,6 +102,10 @@ public class MCAdmin extends JavaPlugin {
 
 	public RandomToken getTokenizer() {
 		return tokenizer;
+	}
+	
+	public boolean getIsEnabled() {
+		return enabled;
 	}
 
 	/**
@@ -183,7 +190,7 @@ public class MCAdmin extends JavaPlugin {
 	// Register all listeners
 	private void registerListeners() {
 		PluginManager pm = this.getServer().getPluginManager();
-		pm.registerEvents(new PushGlobalListener(this), this);
+		pm.registerEvents(new MCAdminGlobalListener(this), this);
 	}
 
 	// Register all commands

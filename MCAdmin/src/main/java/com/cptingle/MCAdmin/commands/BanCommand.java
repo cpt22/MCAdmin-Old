@@ -1,7 +1,5 @@
 package com.cptingle.MCAdmin.commands;
 
-import java.sql.SQLException;
-
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import com.cptingle.MCAdmin.MCAdmin;
 import com.cptingle.MCAdmin.messaging.MSG;
+import com.cptingle.MCAdminItems.BanRequest;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -73,6 +72,8 @@ public class BanCommand implements CommandExecutor {
 			if (args.length > 1)
 				message = allArgs(1, args);
 			
+			plugin.getClient().send(new BanRequest(pName, pUUID, message, sender.getName(), true));
+			
 			Bukkit.getBanList(BanList.Type.NAME).addBan(pName, message, null, null);		
 			Bukkit.broadcast("Player " + pName + " was banned by " + sender.getName(), "mcadmin.ban");
 			if (p != null)
@@ -89,8 +90,10 @@ public class BanCommand implements CommandExecutor {
 				return true;
 			}
 			
+			plugin.getClient().send(new BanRequest(pName, pUUID, "", sender.getName(), false));
+			
 			Bukkit.getBanList(BanList.Type.NAME).pardon(pName);
-			Bukkit.broadcast("Player " + pName + " was unbanned by " + sender.getName(), "mcadmin.unban");		
+			Bukkit.broadcast("Player " + pName + " was unbanned by " + sender.getName(), "mcadmin.unban");
 			return true;		
 		}
 			
