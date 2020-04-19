@@ -62,10 +62,6 @@ public class MCAdmin extends JavaPlugin {
 
 		client = new Client(this, serverToken);
 
-		// Create connection
-		// connection = new Connect(this, config);
-		// wi = new WebInterface();
-
 		// Register event listeners
 		registerListeners();
 		ch = new CommandHandler(this);
@@ -76,11 +72,6 @@ public class MCAdmin extends JavaPlugin {
 
 		loadOnlineUsers();
 
-		/*
-		 * KeepConnAlive kca = new KeepConnAlive(connection.getConnection());
-		 * BukkitScheduler scheduler = getServer().getScheduler();
-		 * scheduler.scheduleSyncRepeatingTask(this, kca, 12000L, 36000);
-		 */
 	}
 
 	@Override
@@ -90,8 +81,6 @@ public class MCAdmin extends JavaPlugin {
 		enabled = false;
 		client = null;
 
-		// Close Connection
-		// connection.close();
 		getLogger().info("disabled");
 	}
 

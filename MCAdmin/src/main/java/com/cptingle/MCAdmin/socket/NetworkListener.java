@@ -1,11 +1,13 @@
 package com.cptingle.MCAdmin.socket;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.cptingle.MCAdmin.exceptions.FailedConnectionException;
 import com.cptingle.MCAdminItems.BanRequest;
@@ -24,6 +26,11 @@ public class NetworkListener extends Thread {
 	private static ObjectInputStream inS;
 
 	private boolean connected;
+	
+	private Queue<Object> disconnectedQueue;
+
+	// Used to execute object send requests
+	private ExecutorService executor;
 
 	/**
 	 * Constructors
@@ -31,9 +38,12 @@ public class NetworkListener extends Thread {
 	public NetworkListener(Client c) {
 		this.client = c;
 		this.connected = false;
+		
+		this.disconnectedQueue = new LinkedList<Object>();
 
-		createConnection();
+		this.executor = Executors.newFixedThreadPool(2);
 
+		this.setName("MCAdmin socket thread");
 		this.start();
 	}
 
@@ -43,15 +53,53 @@ public class NetworkListener extends Thread {
 
 	public void setConnected(boolean val) {
 		this.connected = val;
+		if (!val) {
+			try {
+				outS.close();
+				inS.close();
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NullPointerException e) {
+
+			}
+		} else {
+
+		}
 	}
 
 	/**
 	 * Run method
 	 */
 	public void run() {
+		boolean hasLoggedConnectionError = false;
 		while (client.getPlugin().getIsEnabled()) {
 			while (!isConnected() || socket == null || outS == null || inS == null || socket.isClosed()) {
+				try {
+					socket = tryConnect();
 
+					if (socket != null) {
+						outS = new ObjectOutputStream(socket.getOutputStream());
+						inS = new ObjectInputStream(socket.getInputStream());
+						client.getPlugin().getLogger().info("Connected to remote server");
+						setConnected(true);
+						hasLoggedConnectionError = false;
+						onConnect();
+						break;
+					}
+					sleep(5000);
+				} catch (IOException e) {
+					client.getPlugin().getLogger().severe("Stream Error");
+					setConnected(false);
+					e.printStackTrace();
+				} catch (FailedConnectionException e) {
+					if (!hasLoggedConnectionError)
+						client.getPlugin().getLogger().warning(e.getMessage());
+					hasLoggedConnectionError = true;
+					setConnected(false);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			try {
 				processIncoming(inS.readObject());
@@ -59,23 +107,13 @@ public class NetworkListener extends Thread {
 				// throw new DisconnectedFromServerException("");
 				client.getPlugin().getLogger().warning("Disconnected from remote server");
 				setConnected(false);
-				break;
 			} catch (ClassNotFoundException e) {
 				client.getPlugin().getLogger()
 						.severe("You are running an outdated version of MCAdmin, please update immediately!");
 				break;
 			}
 		}
-	}
-
-	/**
-	 * Connect to Server
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public void createConnection() {
-		new Thread(new NewConnection(client));
+		client.getPlugin().getLogger().severe("Something broke / Lost connection to server");
 	}
 
 	/**
@@ -89,6 +127,8 @@ public class NetworkListener extends Thread {
 			case SEND_TOKEN:
 				client.send(new Token(client.getToken()));
 				break;
+			case SERVER_VALIDATED:
+				client.getPlugin().getLogger().info("Server validated, valid token");
 			default:
 				break;
 			}
@@ -98,93 +138,67 @@ public class NetworkListener extends Thread {
 			client.executeBan((BanRequest) obj);
 		}
 	}
+	
+	public void onConnect() {
+		while (disconnectedQueue.peek() != null) {
+			send(disconnectedQueue.poll());
+		}
+	}
 
 	/**
 	 * 
 	 */
-	public boolean sendOutgoing(Object obj) {
-		System.out.println("sending");
-		try {
-			outS.reset();
-			outS.writeObject(obj);
-			outS.flush();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+	public void send(Object o) {
+		if (isConnected()) {
+			executor.submit(() -> {
+				sendOutgoing(o);
+			});
+		} else {
+			disconnectedQueue.offer(o);
 		}
-
 	}
 
-	private class NewConnection implements Runnable {
+	public void sendOutgoing(Object obj) {
+		try {
+			outS.writeObject(obj);
+			outS.flush();
+		} catch (IOException e) {
+			client.getPlugin().getLogger().severe("Stream error");
+			e.printStackTrace();
+		}
+	}
 
-		private Client c;
+	/**
+	 * Attempts to connect to server and open streams
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws FailedConnectionException
+	 */
+	public Socket tryConnect() throws IOException, FailedConnectionException {
+		Socket s = null;
+		s = makeConnection("mcadmin.xyz", 33233);
 
-		private OutputStream os;
-		private InputStream is;
-
-		public NewConnection(Client c) {
-			this.c = c;
+		// Exit if socket connection not made
+		if (s == null) {
+			throw new FailedConnectionException("Unable to connect to remote server");
 		}
 
-		@Override
-		public void run() {
-			do {
-				try {
-					NetworkListener.socket = tryConnect();
-				} catch (IOException e) {
-					c.getPlugin().getLogger().severe("Stream Error");
-					e.printStackTrace();
-				} catch (FailedConnectionException e) {
-					c.getPlugin().getLogger().warning(e.getMessage());
-				}
-			} while (socket == null && client.getPlugin().getIsEnabled());
+		return s;
+	}
+
+	/**
+	 * Make socket connection
+	 * 
+	 * @param ip   - ip address to connect to server
+	 * @param port - port server is running on
+	 * @return newly made socket or null if socket not made
+	 */
+	public Socket makeConnection(String ip, int port) {
+		try {
+			return new Socket(ip, port);
+		} catch (IOException e) {
+			return null;
 		}
-
-		/**
-		 * Attempts to connect to server and open streams
-		 * 
-		 * @return
-		 * @throws IOException
-		 * @throws FailedConnectionException
-		 */
-		public Socket tryConnect() throws IOException, FailedConnectionException {
-			Socket s = null;
-
-			// Try to connect 10 times before failing
-			int count = 0;
-			while (s == null && count < 10) {
-				s = makeConnection("mcadmin.xyz", 33233);
-				count++;
-			}
-
-			// Exit if socket connection not made
-			if (s == null) {
-				throw new FailedConnectionException("Unable to connect to remote server");
-			}
-
-			os = s.getOutputStream();
-			NetworkListener.outS = new ObjectOutputStream(os);
-			is = s.getInputStream();
-			NetworkListener.inS = new ObjectInputStream(is);
-
-			return s;
-		}
-
-		/**
-		 * Make socket connection
-		 * 
-		 * @param ip   - ip address to connect to server
-		 * @param port - port server is running on
-		 * @return newly made socket or null if socket not made
-		 */
-		public Socket makeConnection(String ip, int port) {
-			try {
-				return new Socket(ip, port);
-			} catch (IOException e) {
-				return null;
-			}
-		}
-
 	}
 }

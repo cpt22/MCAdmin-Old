@@ -19,6 +19,7 @@ public class Client {
 	
 	public Client(MCAdmin plugin, String token) {
 		this.token = token;
+		this.plugin = plugin;
 		// Setup Network Listener
 		nl = new NetworkListener(this);
 	}
@@ -35,10 +36,8 @@ public class Client {
 		return plugin;
 	}
 	
-	
-	
 	public void send(Object o) {
-		nl.sendOutgoing(o);
+		nl.send(o);
 	}
 	
 	
