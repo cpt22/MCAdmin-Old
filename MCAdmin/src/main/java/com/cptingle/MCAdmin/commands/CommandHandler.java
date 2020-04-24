@@ -1,5 +1,6 @@
 package com.cptingle.MCAdmin.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,7 +23,11 @@ public class CommandHandler implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (label.equalsIgnoreCase("mca") || label.equalsIgnoreCase("mcadmin")) {
-
+			if (args.length == 0) {
+				sender.sendMessage("Running MCAdmin Version " + ChatColor.GREEN + MCAdmin.VERSION);
+				return true;
+			}
+			
 			if (args[0] != null && !args[0].equals("")) {
 				String command = args[0];
 				

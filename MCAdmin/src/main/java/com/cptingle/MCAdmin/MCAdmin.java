@@ -23,6 +23,7 @@ import com.cptingle.MCAdminItems.PlayerUpdate;
 import com.cptingle.MCAdminItems.SimpleRequest;
 
 public class MCAdmin extends JavaPlugin {
+	public static final String VERSION = "0.0.1-SNAPSHOT";
 
 	private Client client;
 
