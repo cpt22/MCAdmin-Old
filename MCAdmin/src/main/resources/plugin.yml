@@ -17,6 +17,9 @@ commands:
     pardon:
         description: 'Usage: /pardon <player>'
 permissions:
+    mcadmin.version:
+        description: Displays the version of MCAdmin
+        default: op
     mcadmin.register:
         description: Allows a player to register
         default: op

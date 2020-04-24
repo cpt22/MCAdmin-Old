@@ -23,7 +23,7 @@ public class CommandHandler implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (label.equalsIgnoreCase("mca") || label.equalsIgnoreCase("mcadmin")) {
-			if (args.length == 0) {
+			if ((args.length == 0 || args[0].equalsIgnoreCase("ver") || args[0].equalsIgnoreCase("version")) && sender.hasPermission("mcadmin.version")) {
 				sender.sendMessage("Running MCAdmin Version " + ChatColor.GREEN + MCAdmin.VERSION);
 				return true;
 			}
