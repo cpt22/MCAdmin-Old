@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import com.cptingle.MCAdmin.MCAdmin;
 import com.cptingle.MCAdminItems.BanRequest;
 import com.cptingle.MCAdminItems.KickRequest;
+import com.cptingle.MCAdminItems.Token;
 
 public class Client {
 	private MCAdmin plugin;
@@ -36,6 +37,10 @@ public class Client {
 
 	public MCAdmin getPlugin() {
 		return plugin;
+	}
+
+	public void doRegistration(String token) {
+		send(new Token(token));
 	}
 
 	public void send(Object o) {
